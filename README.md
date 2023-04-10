@@ -15,20 +15,27 @@ Connect using userid guest, Password Linux@Guest
 
 Setting ssh:
 ssh guest@douglabserver.ddns.net -p 50021	--> ansible.douglab
+
 ssh guest@douglabserver.ddns.net -p 50023	--> server1.douglab
+
 ssh guest@douglabserver.ddns.net -p 50015	--> server2.douglab
+
 ssh guest@douglabserver.ddns.net -p 50020	--> server3.douglab
 
 Access using centos web console:
 https://douglabserver.ddns.net:9021/	ansible.douglab	
-https://douglabserver.ddns.net:9023/	server1.douglab	
-https://douglabserver.ddns.net:9015/	server2.douglab	
+
+https://douglabserver.ddns.net:9023/	server1.douglab
+
+https://douglabserver.ddns.net:9015/	server2.douglab
+
 https://douglabserver.ddns.net:9020/	server3.douglab	
 
 Connect using userid guest, Password Linux@Guest
 
 Ansible tower url: 
 https://douglabserver.ddns.net:8843/#/login	ansible.douglab	ansible tower
+
 Jenkins url:
 http://douglabserver.ddns.net:8823/login?from=%2F	server1.douglab	Jenkins
 

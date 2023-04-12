@@ -1,0 +1,27 @@
+---
+- name: Set Tomcat HTTP port
+  hosts: all
+  become: yes
+
+  vars:
+    http_port: 8099
+
+  tasks:
+    - name: Stop Tomcat service
+      service:
+        name: tomcat
+        state: stopped
+
+    - name: Update server.xml configuration file
+      replace:
+        path: /opt/apache-tomcat/conf/server.xml
+        regexp: 'Connector port="([0-9]+)" protocol="HTTP/1.1"'
+        replace: 'Connector port="{{ http_port }}" protocol="HTTP/1.1"'
+      register: server_xml
+
+    - name: Start Tomcat service
+      service:
+        name: tomcat
+        state: started
+      when: server_xml.changed
+

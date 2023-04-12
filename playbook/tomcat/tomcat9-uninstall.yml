@@ -1,0 +1,28 @@
+---
+- name: Uninstall Tomcat 9
+  hosts: all
+  become: true
+  vars:
+    tomcat_install_dir: /opt/tomcat
+  tasks:
+  - name: Stop Tomcat service
+    systemd:
+      name: tomcat
+      state: stopped
+
+  - name: Remove Tomcat installation directory
+    file:
+      path: "{{ tomcat_install_dir }}"
+      state: absent
+
+  - name: Remove Tomcat user and group
+    user:
+      name: tomcat
+      state: absent
+      remove: yes
+
+  - name: Remove Tomcat systemd unit file
+    file:
+      path: /etc/systemd/system/tomcat.service
+      state: absent
+

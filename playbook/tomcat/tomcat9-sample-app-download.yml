@@ -1,0 +1,20 @@
+---
+- name: Download sample app WAR file
+  hosts: all
+  vars:
+    app_url: https://tomcat.apache.org/tomcat-9.0-doc/appdev/sample/sample.war
+    app_install_dir: /opt/release/tomcat-apps/
+  tasks:
+  - name: Download application WAR file
+    get_url:
+      url: "{{ app_url }}"
+      dest: "/tmp/sample.war"
+
+  - name: Copy application WAR file to installation directory
+    copy:
+      src: "/tmp/sample.war"
+      dest: "{{ app_install_dir }}/sample.war"
+      owner: tomcat
+      group: tomcat
+      mode: '0644'
+

@@ -1,0 +1,46 @@
+---
+- name: Control Tomcat9
+  hosts: all
+  become: true
+  vars:
+    tomcat_service: "tomcat"
+    tomcat_home: "/opt/tomcat"
+  
+  tasks:
+    - name: Stop Tomcat9
+      systemd:
+        name: "{{ tomcat_service }}"
+        state: stopped
+      when: tomcat_service in ansible_facts.services and ansible_facts.services[tomcat_service].state == 'running'
+      register: result
+
+    - name: Start Tomcat9
+      systemd:
+        name: "{{ tomcat_service }}"
+        state: started
+      when: tomcat_service in ansible_facts.services and ansible_facts.services[tomcat_service].state == 'stopped'
+      register: result
+
+    - name: Restart Tomcat9
+      systemd:
+        name: "{{ tomcat_service }}"
+        state: restarted
+      when: tomcat_service in ansible_facts.services and ansible_facts.services[tomcat_service].state == 'running'
+      register: result
+
+    - name: Check Tomcat9 status
+      systemd:
+        name: "{{ tomcat_service }}"
+        state: status
+      register: result
+
+    - name: Debug Tomcat9 status
+      debug:
+        var: result
+
+  handlers:
+    - name: Restart Tomcat9
+      systemd:
+        name: "{{ tomcat_service }}"
+        state: restarted
+

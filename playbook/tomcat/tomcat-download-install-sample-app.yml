@@ -1,0 +1,48 @@
+---
+- name: Install Tomcat and deploy Java application
+  hosts: all
+  become: yes
+
+  vars:
+    tomcat_version: 10.1.6
+    java_app_name: sample-app
+    java_app_war_file: sample-app.war
+
+  tasks:
+    - name: Install Java
+      yum:
+        name: java-1.8.0-openjdk
+        state: present
+
+    - name: Download Tomcat
+      get_url:
+        url: "https://dlcdn.apache.org/tomcat/tomcat-{{ tomcat_version.split('.')[0] }}/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
+        dest: "/tmp/apache-tomcat-{{ tomcat_version }}.tar.gz"
+
+    - name: Extract Tomcat
+      unarchive:
+        src: "/tmp/apache-tomcat-{{ tomcat_version }}.tar.gz"
+        dest: "/opt"
+        remote_src: yes
+        creates: "/opt/apache-tomcat-{{ tomcat_version }}"
+
+    - name: Start Tomcat service
+      systemd:
+        name: tomcat
+        state: started
+
+    - name: Deploy Java application
+      copy:
+        src: "{{ java_app_war_file }}"
+        dest: "/opt/apache-tomcat-{{ tomcat_version }}/webapps/{{ java_app_name }}.war"
+        mode: '0644'
+        owner: tomcat
+        group: tomcat
+      notify: restart tomcat
+
+  handlers:
+    - name: restart tomcat
+      systemd:
+        name: tomcat
+        state: restarted
+

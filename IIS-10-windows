@@ -1,0 +1,29 @@
+Access Server in IIS
+Launch IIS Manager and click the server name in the Connections menu on the left.
+
+Generating CSR - Open Server Certificates Manager
+On the Home page for the server, locate the IIS section in the center window and double-click Server Certificates. The Server Certificates control panel will open in the center window. Here click on the “Create Certificate Request,” fill out the prompted data and finish the steps.
+
+Open Complete Certificate Request Wizard
+On the Actions menu on the right, click Complete Certificate Request… The Complete Certificate Request wizard will open in a new window.
+
+Specify Certificate Authority Response
+Click the … button to locate your certificate on your PC and add it to IIS (you will not be able to locate it if you don't change the format beforehand). The Friendly Name should be something that helps you easily identify the certificate. Finally, select Web Hosting as the certificate store and click OK to import your certificate.
+
+Set Certificate Bindings
+Return to the server home page in IIS. In the left-side Connections menu, expand Sites and click on the site that needs the SSL installed. On the Home page for the website, in the right-side Actions menu, locate Edit Site and click Bindings… The Site Bindings window will open.
+
+If you are installing an SSL certificate for the first time, click Add to create a new binding. If you are replacing an old certificate, click the existing binding and then click Edit. In the Add Site Bindings window, select the following:
+
+Type: https
+IP Address: Select your site’s IP Address or All Unassigned.
+Port: 443
+Host Name: Not required for single name certificate installation.
+If you are installing more than one certificate or installing the certificate on more than one website, enter the hostname (domain) that you want to secure and check the box to Require Server Name Indication.
+
+SSL Certificate: Select your site’s certificate from the drop-down menu.
+
+When all settings are configured, click OK.
+
+SSL Settings
+Go back and access the SSL Settings. Click on the Require SSL checkbox and in the right-side Actions menu, click Apply.

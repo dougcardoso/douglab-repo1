@@ -1,0 +1,47 @@
+---
+- name: Install Docker on Red Hat
+  hosts: all
+  become: true
+  tasks:
+    - name: Install required packages
+      yum:
+        name:
+          - yum-utils
+          - device-mapper-persistent-data
+          - lvm2
+        state: present
+
+    - name: Add Docker repository
+      yum_repository:
+        name: docker-ce-stable
+        description: Docker CE Stable - $basearch
+        baseurl: https://download.docker.com/linux/centos/7/$basearch/stable
+        gpgcheck: yes
+        gpgkey: https://download.docker.com/linux/centos/gpg
+        enabled: yes
+      notify:
+        - Update yum cache
+
+    - name: Install Docker CE
+      yum:
+        name: docker-ce
+        state: present
+      notify:
+        - Start Docker service
+
+    - name: Enable Docker service
+      systemd:
+        name: docker
+        enabled: yes
+
+  handlers:
+    - name: Update yum cache
+      yum:
+        name: '*'
+        state: latest
+
+    - name: Start Docker service
+      systemd:
+        name: docker
+        state: started
+

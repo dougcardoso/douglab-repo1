@@ -1,0 +1,40 @@
+---
+- name: Delete users and groups from list
+  hosts: all
+  become: true
+
+  tasks:
+  - name: Read user and group list
+    slurp:
+      src: /opt/dev/playbook/linux-admin/delete-users-groups.txt
+    register: user_group_file
+
+  - name: Delete users and groups
+    shell: |
+      echo "{{ user_group_file.content | b64decode }}" | while read user; do
+        username=$(echo "$user" | cut -d':' -f1)
+        groupname=$username
+        if id -u $username >/dev/null 2>&1; then
+          userdel -r "$username"
+        fi
+        if grep -q "^$groupname:" /etc/group; then
+          groupdel "$groupname"
+        fi
+      done
+    register: delete_output
+    ignore_errors: yes
+
+  - name: Show all users and groups after deletion
+    shell: |
+      echo "************ Users ************"
+      cat /etc/passwd
+      echo "************ Groups ************"
+      cat /etc/group
+    register: show_output
+    when: delete_output.rc == 0
+
+  - name: Display deletion errors
+    debug:
+      var: delete_output.stderr
+    when: delete_output.rc != 0
+

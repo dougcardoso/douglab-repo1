@@ -1,0 +1,56 @@
+---
+- name: Install JBoss and deploy sample application
+  hosts: all
+  become: yes
+
+  vars:
+    jboss_version: "wildfly-24.0.1.Final"
+    sample_app_war_url: "https://example.com/sampleapp.war"
+
+  tasks:
+    - name: Download JBoss installation file
+      get_url:
+        url: "https://download.jboss.org/{{ jboss_version }}/{{ jboss_version }}.tar.gz"
+        dest: "/tmp/{{ jboss_version }}.tar.gz"
+      register: jboss_download
+
+    - name: Extract JBoss installation file
+      unarchive:
+        src: "/tmp/{{ jboss_version }}.tar.gz"
+        dest: "/opt/"
+        remote_src: yes
+        creates: "/opt/{{ jboss_version }}"
+
+    - name: Start JBoss server
+      shell: "/opt/{{ jboss_version }}/bin/standalone.sh -c standalone.xml > /dev/null 2>&1 &"
+      async: 60
+      poll: 0
+      register: jboss_start
+
+    - name: Wait for JBoss server to start
+      wait_for:
+        host: "{{ inventory_hostname }}"
+        port: 8080
+        timeout: 300
+        delay: 5
+
+    - name: Deploy sample application
+      get_url:
+        url: "{{ sample_app_war_url }}"
+        dest: "/opt/{{ jboss_version }}/standalone/deployments/sampleapp.war"
+        mode: "0644"
+      register: sample_app_deploy
+
+    - name: Check sample application deployment
+      uri:
+        url: "http://{{ inventory_hostname }}:8080/sampleapp"
+        status_code: 200
+      register: sample_app_check
+      until: sample_app_check.status == 200
+      retries: 5
+      delay: 5
+
+    - name: Stop JBoss server
+      shell: "kill $(cat /opt/{{ jboss_version }}/standalone/pid)"
+      when: jboss_start.changed
+

@@ -1,0 +1,67 @@
+---
+- name: Delete Linux users and groups
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Read user and group list from file
+      slurp:
+        src: /opt/dev/playbook/linux-admin/delete-users-groups.txt
+      register: file_contents
+
+    - name: Delete users and groups
+      shell: |
+        while read user; do
+          username=$(echo "$user" | cut -d':' -f1)
+          groupname=$username
+          if id -u $username >/dev/null 2>&1; then
+            userdel -r "$username"
+          fi
+          if grep -q "^$groupname:" /etc/group; then
+            groupdel "$groupname"
+          fi
+        done < <(echo "{{ file_contents['content'] | b64decode }}")
+- name: Test if users and groups have been deleted
+  hosts: all
+  become: true
+  tasks:
+    - name: Check if deleted users exist
+      shell: id {{ item.split(':')[0] }}
+      ignore_errors: yes
+      register: result
+      with_lines: cat /opt/dev/playbook/linux-admin/delete-users-groups.txt
+      failed_when: false
+      changed_when: false
+      check_mode: no
+    - name: Fail if any deleted users exist
+      fail:
+        msg: "The user '{{ item.split(':')[0] }}' still exists on the system!"
+      when: result.rc == 0
+      with_lines: cat /opt/dev/playbook/linux-admin/delete-users-groups.txt
+    - name: Check if deleted groups exist
+      shell: getent group {{ item.split(':')[0] }}
+      ignore_errors: yes
+      register: result
+      with_lines: cat /opt/dev/playbook/linux-admin/delete-users-groups.txt
+      failed_when: false
+      changed_when: false
+      check_mode: no
+    - name: Fail if any deleted groups exist
+      fail:
+        msg: "The group '{{ item.split(':')[0] }}' still exists on the system!"
+      when: result.rc == 0
+      with_lines: cat /opt/dev/playbook/linux-admin/delete-users-groups.txt
+- name: Delete users and groups
+  become: true
+  shell: |
+    cat /opt/dev/playbook/linux-admin/delete-users-groups.txt | while read user; do
+      username=$(echo "$user" | cut -d':' -f1)
+      groupname=$username
+      if id -u $username >/dev/null 2>&1; then
+        userdel -r "$username"
+      fi
+      if grep -q "^$groupname:" /etc/group; then
+        groupdel "$groupname"
+      fi
+    done
+

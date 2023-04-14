@@ -1,0 +1,28 @@
+---
+- name: Add users and groups to servers
+  hosts: all
+  become: true
+  vars:
+    users_file: /opt/dev/playbook/linux-admin/users-groups.txt
+  tasks:
+    - name: Create users and groups from file
+      shell: |
+        while read user; do
+          username=$(echo "$user" | cut -d':' -f1)
+          password=$(echo "$user" | cut -d':' -f2)
+          groupname=$username
+          egrep "^$groupname" /etc/group >& /dev/null
+          if [ $? -ne 0 ]; then
+            groupadd "$groupname"
+          fi
+          egrep "^$username" /etc/passwd >& /dev/null
+          if [ $? -ne 0 ]; then
+            useradd -m -s /bin/bash -p $(echo "$password" | openssl passwd -1 -stdin) -g "$groupname" "$username"
+          fi
+        done < "{{ users_file }}"
+      register: create_user_group_result
+
+    - name: Print the output of the 'Create users and groups from file' task
+      debug:
+        var: create_user_group_result.stdout_lines
+

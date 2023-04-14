@@ -1,0 +1,12 @@
+---
+- name: Test SSH connectivity
+  hosts: all
+
+  tasks:
+    - name: Check SSH connection
+      wait_for:
+        host: "{{ inventory_hostname }}"
+        port: 22
+        state: started
+        timeout: 10
+

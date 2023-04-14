@@ -1,0 +1,15 @@
+---
+- name: Update Red Hat Linux
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Update package cache
+      yum:
+        update_cache: yes
+
+    - name: Update all packages
+      yum:
+        name: "*"
+        state: latest
+

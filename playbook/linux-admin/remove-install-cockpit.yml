@@ -1,0 +1,7 @@
+- name: Remover o cockpit de todos os servidores Linux
+  hosts: all
+  become: true
+  tasks:
+    - name: Executar o script shell de remoção do cockpit
+      shell: /root/remove-install-cockpit.sh
+

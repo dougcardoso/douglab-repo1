@@ -1,0 +1,13 @@
+---
+- name: Configure firewall on CentOS 8
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Allow port 9090 through firewall
+      shell: sudo firewall-cmd --add-port=9090/tcp --permanent
+    - name: Show firewall configuration
+      shell: sudo firewall-cmd --list-all
+    - name: Reload firewall
+      shell: sudo firewall-cmd --reload
+

@@ -1,0 +1,50 @@
+---
+- name: Install Tomcat and deploy WAR
+  hosts: server2.douglab
+  become: true
+  vars:
+    tomcat_version: 9.0.56
+    war_file_path: /opt/dev/tomcat/SampleWebApp.war
+    tomcat_dir: /opt/tomcat
+  tasks:
+    - name: Install prerequisites
+      yum:
+        name: java-1.8.0-openjdk-devel
+        state: present
+
+    - name: Download Tomcat
+      get_url:
+        url: "https://downloads.apache.org/tomcat/tomcat-{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
+        dest: /tmp/apache-tomcat-{{ tomcat_version }}.tar.gz
+
+    - name: Extract Tomcat
+      become: yes
+      unarchive:
+        src: /tmp/apache-tomcat-{{ tomcat_version }}.tar.gz
+        dest: "{{ tomcat_dir }}"
+        remote_src: yes
+        extra_opts: [--strip-components=1]
+
+    - name: Configure Tomcat SSL
+      become: yes
+      blockinfile:
+        path: "{{ tomcat_dir }}/conf/server.xml"
+        block: |
+          <Connector port="8444" protocol="HTTP/1.1" SSLEnabled="true"
+                     maxThreads="150" scheme="https" secure="true"
+                     clientAuth="false" sslProtocol="TLS"
+                     keystoreFile="/etc/pki/tls/private/localhost.key"
+                     keystorePass="changeit"
+                     keyAlias="tomcat"
+                     truststoreFile="/etc/pki/tls/certs/ca-bundle.crt"
+                     truststoreType="PEM"
+                     truststorePass="changeit" />
+
+    - name: Create self-signed certificate
+      become: yes
+      command: "openssl req -newkey rsa:2048 -nodes -keyout /opt/tomcat/keys/private/server2.douglab.key -x509 -days 365 -out /opt/tomcat/cert/server2.douglab.crt -subj '/CN=server2.douglab'"
+
+    - name: Deploy WAR
+      get_url:
+        url: "{{ war_file_url }}"
+        dest: "{{ tomcat_dir }}/webapps/sample.war"

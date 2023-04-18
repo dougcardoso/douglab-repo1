@@ -1,0 +1,21 @@
+---
+- name: Clone or pull git repository
+  hosts: all
+  tasks:
+    - name: Check if directory exists
+      stat:
+        path: /opt/prod
+      register: dir_check
+
+    - name: Clone git repository
+      git:
+        repo: https://github.com/dougcardoso/douglab-repo1.git
+        dest: /opt/prod
+      when: dir_check.stat.exists == False
+
+    - name: Pull git repository
+      git:
+        repo: https://github.com/dougcardoso/douglab-repo1.git
+        dest: /opt/prod
+        update: yes
+      when: dir_check.stat.exists == True

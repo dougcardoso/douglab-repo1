@@ -12,7 +12,8 @@ Contact Douglas Cardoso, dougcardoso21@hotmail.com or linkedin page: https://www
 You are invited to login and review 4 host centos8 linux servers:
 Connect using userid guest, Password Linux@Guest
 
-Setting ssh:
+Set ssh port 500xx:
+
 ssh guest@douglabserver.ddns.net -p 50021	--> ansible.douglab
 
 ssh guest@douglabserver.ddns.net -p 50023	--> server1.douglab

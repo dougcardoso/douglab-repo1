@@ -7,8 +7,7 @@ Thank you for using our Jenkins server for your educational and study purposes.
 
 "Attention: This system is intended for educational and research purposes only. Any unauthorized access, use, or attempts to exploit this system, including hacking activities, will be considered illegal and prosecuted to the fullest extent of the law. By accessing this system, you agree to use it for lawful and ethical purposes only. Any violation of these terms may result in immediate termination of your access and possible legal consequences."
 
-
-contact Douglas Cardoso, dougcardoso21@hotmail.com or linkedin page: https://www.linkedin.com/in/dougcardoso21/
+Contact Douglas Cardoso, dougcardoso21@hotmail.com or linkedin page: https://www.linkedin.com/in/dougcardoso21/
 
 You are invited to login and review 4 host centos8 linux servers:
 Connect using userid guest, Password Linux@Guest
@@ -37,7 +36,7 @@ Ansible tower url:
 https://douglabserver.ddns.net:8843/#/login	ansible.douglab	ansible tower
 
 Jenkins url:
-http://douglabserver.ddns.net:8823/login?from=%2F	server1.douglab	Jenkins
+http://douglabserver.ddns.net:8943/login?from=%2F	server1.douglab	Jenkins
 
 "Attention: This system is intended for educational and research purposes only. Any unauthorized access, use, or attempts to exploit this system, including hacking activities, will be considered illegal and prosecuted to the fullest extent of the law. By accessing this system, you agree to use it for lawful and ethical purposes only. Any violation of these terms may result in immediate termination of your access and possible legal consequences."
 "Copyright and reserved marks from Red Hat, Ansible, Jenkins, CentOS 8, Terraform, Git, and Apache are protected by laws. Unauthorized use, reproduction, or distribution of these trademarks or any other intellectual property belonging to these companies is strictly prohibited and may result in legal consequences. These trademarks are the exclusive property of their respective owners and may not be used without their express written consent. By using any software product or service associated with these trademarks, you agree to abide by all applicable laws and regulations governing their use and protection."

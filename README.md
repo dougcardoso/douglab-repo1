@@ -14,6 +14,7 @@ You are invited to login and review 4 host centos8 linux servers:
 Connect using userid guest, Password Linux@Guest
 
 Setting ssh:
+
 ssh guest@douglabserver.ddns.net -p 50021	--> ansible.douglab
 
 ssh guest@douglabserver.ddns.net -p 50023	--> server1.douglab
@@ -23,6 +24,7 @@ ssh guest@douglabserver.ddns.net -p 50015	--> server2.douglab
 ssh guest@douglabserver.ddns.net -p 50020	--> server3.douglab
 
 Access using centos web console:
+
 https://douglabserver.ddns.net:9021/	ansible.douglab	
 
 https://douglabserver.ddns.net:9023/	server1.douglab

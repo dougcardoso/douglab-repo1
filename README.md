@@ -9,6 +9,8 @@ Thank you for using our Jenkins server for your educational and study purposes.
 
 Contact Douglas Cardoso, dougcardoso21@hotmail.com or linkedin page: https://www.linkedin.com/in/dougcardoso21/
 
+Project page:https://douglabserver.ddns.net/
+
 You are invited to login and review 4 host centos8 linux servers:
 Connect using userid guest, Password Linux@Guest
 

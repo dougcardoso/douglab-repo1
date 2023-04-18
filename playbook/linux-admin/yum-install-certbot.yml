@@ -1,0 +1,12 @@
+- name: Install Certbot
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Install Certbot package
+      yum:
+        name: certbot
+        state: latest
+        update_cache: yes
+        disable_gpg_check: yes
+

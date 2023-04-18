@@ -1,0 +1,22 @@
+---
+- name: Test Tomcat installation
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Check Tomcat service status
+      systemd:
+        name: tomcat
+        state: started
+      register: tomcat_status
+
+    - name: Check Tomcat version
+      shell: "/opt/apache-tomcat-{{ tomcat_version }}/bin/version.sh"
+      register: tomcat_version
+      when: tomcat_status.changed
+
+    - name: Display Tomcat version
+      debug:
+        var: tomcat_version.stdout_lines
+      when: tomcat_version.changed
+

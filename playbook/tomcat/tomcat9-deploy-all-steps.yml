@@ -1,0 +1,24 @@
+---
+- name: Executar sequência de playbooks do Tomcat9
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Executar playbook de instalação do Tomcat9
+      include_playbook: tomcat9-install.yml
+
+    - name: Executar playbook de verificação de instalação do Tomcat9
+      include_playbook: tomcat9-check-installation.yml
+
+    - name: Executar playbook de configuração do Tomcat9
+      include_playbook: tomcat9-server-xml-settings.yml
+
+    - name: Executar playbook de download da aplicação de exemplo do Tomcat9
+      include_playbook: tomcat9-sample-app-download.yml
+
+    - name: Executar playbook de verificação de saúde do Tomcat9
+      include_playbook: tomcat9-app-sample-deploy.yml
+
+    - name: Executar playbook de verificação de saúde do Tomcat9
+      include_playbook: tomcat9-health-check.yml
+

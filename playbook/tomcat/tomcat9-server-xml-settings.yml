@@ -1,0 +1,83 @@
+---
+- name: Configure Tomcat 9
+  hosts: all
+  become: true
+  vars:
+    tomcat_home: /opt/apache-tomcat-9.0.55
+  tasks:
+    - name: Create Tomcat user
+      user:
+        name: tomcat
+        group: tomcat
+        shell: /bin/false
+    - name: Set Tomcat directory permissions
+      file:
+        path: "{{ tomcat_home }}"
+        state: directory
+        owner: tomcat
+        group: tomcat
+        mode: '0755'
+    - name: Set Tomcat file permissions
+      file:
+        path: "{{ tomcat_home }}/{{ item }}"
+        state: file
+        owner: tomcat
+        group: tomcat
+        mode: '0644'
+      with_items:
+        - conf/server.xml
+        - conf/web.xml
+    - name: Configure Tomcat logging
+      copy:
+        src: files/logging.properties
+        dest: "{{ tomcat_home }}/conf/logging.properties"
+        owner: tomcat
+        group: tomcat
+        mode: '0644'
+    - name: Configure Tomcat manager app
+      copy:
+        src: files/tomcat-users.xml
+        dest: "{{ tomcat_home }}/conf/tomcat-users.xml"
+        owner: tomcat
+        group: tomcat
+        mode: '0644'
+    - name: Configure Tomcat host app
+      copy:
+        src: files/host-manager-context.xml
+        dest: "{{ tomcat_home }}/webapps/host-manager/META-INF/context.xml"
+        owner: tomcat
+        group: tomcat
+        mode: '0644'
+    - name: Configure Tomcat manager app
+      copy:
+        src: files/manager-context.xml
+        dest: "{{ tomcat_home }}/webapps/manager/META-INF/context.xml"
+        owner: tomcat
+        group: tomcat
+        mode: '0644'
+    - name: Configure Tomcat ROOT app
+      copy:
+        src: files/ROOT-context.xml
+        dest: "{{ tomcat_home }}/webapps/ROOT/META-INF/context.xml"
+        owner: tomcat
+        group: tomcat
+        mode: '0644'
+    - name: Configure Tomcat examples app
+      copy:
+        src: files/examples-context.xml
+        dest: "{{ tomcat_home }}/webapps/examples/META-INF/context.xml"
+        owner: tomcat
+        group: tomcat
+        mode: '0644'
+    - name: Configure Tomcat docs app
+      copy:
+        src: files/docs-context.xml
+        dest: "{{ tomcat_home }}/webapps/docs/META-INF/context.xml"
+        owner: tomcat
+        group: tomcat
+        mode: '0644'
+    - name: Restart Tomcat
+      systemd:
+        name: tomcat
+        state: restarted
+

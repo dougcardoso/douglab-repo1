@@ -1,0 +1,38 @@
+---
+- name: Deploy sample app to Tomcat9
+  hosts: all
+  vars:
+    app_name: sample
+    app_war_file: sample.war
+    app_url: http://example.com/sample.war
+    app_install_dir: /opt/release/tomcat-apps/
+  tasks:
+  - name: Download application WAR file
+    get_url:
+      url: "{{ app_url }}"
+      dest: "/tmp/{{ app_war_file }}"
+
+  - name: Copy application WAR file to Tomcat webapps directory
+    copy:
+      src: "/tmp/{{ app_war_file }}"
+      dest: "{{ app_install_dir }}/{{ app_war_file }}"
+      owner: tomcat
+      group: tomcat
+      mode: '0644'
+
+  - name: Ensure Tomcat service is running
+    service:
+      name: tomcat
+      state: started
+
+  - name: Wait for Tomcat to deploy application
+    wait_for:
+      path: "{{ app_install_dir }}/{{ app_name }}"
+      state: directory
+      timeout: 60
+
+  - name: Restart Tomcat service to ensure application is loaded
+    service:
+      name: tomcat
+      state: restarted
+

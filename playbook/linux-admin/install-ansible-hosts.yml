@@ -1,0 +1,20 @@
+- name: Install Ansible on CentOS 8
+  hosts: all
+  become: true
+  tasks:
+    - name: Add EPEL repository
+      dnf:
+        name: epel-release
+        state: present
+
+    - name: Install required packages
+      dnf:
+        name: python3-pip
+        state: present
+
+    - name: Install Ansible from official repository
+      pip:
+        name: ansible
+        executable: pip3
+        state: latest
+

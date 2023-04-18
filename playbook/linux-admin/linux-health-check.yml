@@ -1,0 +1,27 @@
+---
+- name: Perform Linux host health check
+  hosts: all
+  gather_facts: yes
+  become: true
+  
+  tasks:
+    - name: Check CPU usage
+      shell: top -bn1 | grep "Cpu(s)" | awk '{print $2 + $4}'
+      register: cpu_usage
+      
+    - name: Check memory usage
+      shell: free | awk '/Mem/{printf("%.2f\n"), $3/$2*100}'
+      register: mem_usage
+      
+    - name: Check disk usage
+      shell: df -h | awk '$NF=="/"{printf "%s", $5}'
+      register: disk_usage
+      
+    - name: Check system load
+      shell: uptime | awk '{print $(NF-2), $(NF-1), $NF}'
+      register: system_load
+      
+    - name: Display health check results
+      debug:
+        msg: "CPU usage: {{ cpu_usage.stdout }}%, Memory usage: {{ mem_usage.stdout }}%, Disk usage: {{ disk_usage.stdout }}%, System load: {{ system_load.stdout }}"
+

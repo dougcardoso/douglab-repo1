@@ -1,0 +1,34 @@
+---
+- name: Check Tomcat 9 Health
+  hosts: all
+  become: true
+  vars:
+    tomcat_url: http://localhost:8080
+    tomcat_apps:
+      - /manager/status
+      - /manager/text/list
+  tasks:
+  - name: Check Tomcat server status
+    uri:
+      url: "{{ tomcat_url }}/status"
+      return_content: yes
+    register: tomcat_status
+
+  - name: Fail if Tomcat is not running
+    fail:
+      msg: "Tomcat is not running"
+    when: tomcat_status.status != 200
+
+  - name: Check Tomcat applications status
+    uri:
+      url: "{{ tomcat_url }}{{ item }}"
+      return_content: yes
+    register: tomcat_app_status
+    with_items: "{{ tomcat_apps }}"
+
+  - name: Fail if any application is not running
+    fail:
+      msg: "Application {{ item.item }} is not running"
+    when: item.status != 200
+    loop: "{{ tomcat_app_status.results }}"
+

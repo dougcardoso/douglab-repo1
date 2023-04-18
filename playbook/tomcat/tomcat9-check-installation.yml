@@ -1,0 +1,38 @@
+---
+- name: Validate Tomcat 9 installation
+  hosts: all
+  become: true
+  vars:
+    tomcat_version: 9.0.55
+  tasks:
+    - name: Check if Tomcat is running
+      systemd:
+        name: tomcat
+        state: started
+      register: tomcat_running
+    - name: Validate Tomcat version
+      command: "/opt/apache-tomcat-{{ tomcat_version }}/bin/version.sh | grep 'Server version:' | awk '{ print \$4 }'"
+      register: tomcat_version_output
+    - name: Validate Tomcat homepage
+      uri:
+        url: "http://localhost:8080/"
+        return_content: yes
+        status_code: 200
+        timeout: 5
+      register: tomcat_homepage
+      until: tomcat_homepage.status == 200
+      retries: 5
+      delay: 5
+      ignore_errors: true
+    - name: Display Tomcat version
+      debug:
+        var: tomcat_version_output.stdout_lines
+    - name: Display Tomcat homepage content
+      debug:
+        var: tomcat_homepage.content
+    - name: Stop Tomcat
+      systemd:
+        name: tomcat
+        state: stopped
+      when: tomcat_running.changed == true
+

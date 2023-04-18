@@ -1,0 +1,19 @@
+- name: Show all users and groups in CentOS 8
+  hosts: all
+  tasks:
+    - name: Show all users
+      command: getent passwd
+      register: users
+
+    - name: Show all groups
+      command: getent group
+      register: groups
+
+    - name: Print all users
+      debug:
+        var: users.stdout_lines
+
+    - name: Print all groups
+      debug:
+        var: groups.stdout_lines
+

@@ -11,6 +11,8 @@ Contact Douglas Cardoso, dougcardoso21@hotmail.com or linkedin page: https://www
 
 Project page:https://douglabserver.ddns.net/
 
+Project page:https://douglabserver.ddns.net/
+
 You are invited to login and review 4 host centos8 linux servers:
 Connect using userid guest, Password Linux@Guest
 
@@ -25,6 +27,7 @@ ssh guest@douglabserver.ddns.net -p 50015	--> server2.douglab
 ssh guest@douglabserver.ddns.net -p 50020	--> server3.douglab
 
 Access using centos web console:
+
 https://douglabserver.ddns.net:9021/	ansible.douglab	
 
 https://douglabserver.ddns.net:9023/	server1.douglab
@@ -36,7 +39,7 @@ https://douglabserver.ddns.net:9020/	server3.douglab
 Connect using userid guest, Password Linux@Guest
 
 Ansible tower url: 
-https://douglabserver.ddns.net:8843/#/login	ansible.douglab	ansible tower
+https://douglabserver.ddns.net:8843/#/login	ansible.douglab	Ansible Tower
 
 Jenkins url:
 https://douglabserver.ddns.net:8943/jenkins/	server1.douglab	Jenkins

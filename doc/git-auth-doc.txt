@@ -1,0 +1,26 @@
+-Seguir o guia de instalação relativo ao seu sistema operacional contido em https://git-scm.com/download/linux. No caso do ubuntu, insira as seguintes linhas de comando para a versão mais recente:
+(1)sudo apt-get install git
+O git já estará instalado. Para verificar se a instalação está correta, digite "git --version", esta é a saída do meu terminal:
+git version 2.16.2
+
+-Para configurar seu nome e-mail, entre com os seguintes comandos:
+(1) git config --global user.name "SEUNOME"  (com aspas)
+(2) git config --global user.email SEUEMAIL  (sem aspas)
+
+
+guia de conexão ao github pelo protocolo ssh "https://help.github.com/articles/connecting-to-github-with-ssh/"
+
+Para criar sua chave privada e sua chave pública, é necessário somente o comando abaixo. Para não especificar o caminho(o que não é realmente necessário) e senha, basta digitar enter algumas vezes no prompt gerado. As chaves(se você não especificou o caminho) estarão em ~/.ssh.
+(1) ssh-keygen -t rsa -b 4096 -C "SEUEMAIL"   (com aspas)
+
+Alguns passos necessários(se você especificou um caminho diferente do default, será necessário mudar o caminho da chave privada no comando 2):
+(1) eval "$(ssh-agent -s)"      (Inicia o ssh agente em background)
+(2) ssh-add ~/.ssh/id_rsa       (passa a chave privada para o ssh-agent)
+-Instruções para adicionar a chave pública ao github (arquivo .pub, por exemplo, id_rsa.pub) contidas no link "https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/"
+
+-Necessário para o git guardar o usuário e senha do github para não precisar redigitar a cada push. Entre com o comando:
+(1) git config --global credential.helper cache
+
+Teste para verificar se a conexão foi realizada, assim como se a conexão foi gerada
+(1) ssh -T git@github.com
+Hi MauricioBCC! You've successfully authenticated, but GitHub does not provide shell access.

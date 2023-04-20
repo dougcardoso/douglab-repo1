@@ -16,3 +16,8 @@
         version: "{{ git_branch }}"
         update: yes
 
+    - name: Set permissions on /opt/dev/
+      become: true
+      become_method: sudo
+      command: sudo chmod -R 755 /opt/dev/
+

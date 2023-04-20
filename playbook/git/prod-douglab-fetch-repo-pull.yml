@@ -4,8 +4,8 @@
   become: true
   vars:
     git_repo: git@github.com:dougcardoso/douglab-repo1.git
-    git_branch: dev
-    target_dir: /opt/dev/
+    git_branch: master
+    target_dir: /opt/prod/
   tasks:
     - name: Fetch changes from Git repository
       git:
@@ -16,8 +16,12 @@
         version: "{{ git_branch }}"
         update: yes
 
-    - name: Set permissions on /opt/dev/
+    - name: Set permissions on /opt/prod/
       become: true
       become_method: sudo
-      command: sudo chmod -R 755 /opt/dev/
+      command: sudo chmod -R 755 /opt/prod/
 
+    - name: Set change owner on /opt/prod/
+      become: true
+      become_method: sudo
+      command: sudo chown -R ansible:ansible /opt/prod/

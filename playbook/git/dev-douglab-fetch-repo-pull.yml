@@ -1,0 +1,27 @@
+---
+- name: Pull from dev branch of Git repository via SSH
+  hosts: ansible.douglab
+  become: true
+  vars:
+    git_repo: git@github.com:dougcardoso/douglab-repo1.git
+    git_branch: dev
+    target_dir: /opt/dev/
+  tasks:
+    - name: Fetch changes from Git repository
+      git:
+        repo: "{{ git_repo }}"
+        dest: "{{ target_dir }}"
+        accept_hostkey: yes
+        key_file: /home/ansible/.ssh/id_rsa_git
+        version: "{{ git_branch }}"
+        update: yes
+
+    - name: Set permissions on /opt/dev/
+      become: true
+      become_method: sudo
+      command: sudo chmod -R 755 /opt/dev/
+
+    - name: Set change owner on /opt/dev/
+      become: true
+      become_method: sudo
+      command: sudo chown -R ansible:ansible /opt/dev/

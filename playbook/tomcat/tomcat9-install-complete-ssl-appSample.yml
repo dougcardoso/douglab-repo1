@@ -18,10 +18,14 @@
         dest: "/tmp/{{ sampleapp_filename }}"
 
     - name: Copy tomcat9-installation.sh script to remote server
+      become: true
       copy:
         src: /var/lib/awx/projects/dev/tomcat/tomcat9-instalation.sh
         dest: /opt/tomcat9/tomcat9-installation.sh
-        mode: '0755'
+        owner: tomcat
+        group: tomcat
+        mode: 0755
+
     - name: Execute tomcat9-installation.sh script
       command: sudo sh /opt/tomcat9/tomcat9-installation.sh
 

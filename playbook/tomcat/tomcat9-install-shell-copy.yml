@@ -6,5 +6,7 @@
 
   tasks:
     - name: Execute Python script
-      command: python /opt/tomcat/tomcat9-install-shell-copy.py
+      command: >
+        ssh ansible@{{ inventory_hostname }} 'cd /opt/dev/playbook/tomcat && python /opt/dev/playbook/tomcat/tomcat9-install-shell-copy.py'
+      delegate_to: ansible.douglab
 

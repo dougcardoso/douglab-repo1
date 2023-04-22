@@ -1,10 +1,14 @@
 ---
 - name: Execute tomcat9-run-script.py
-  hosts: all
+  hosts: 
+    - server2.douglab
+    - server3.douglab
   become: true
   gather_facts: false
 
   tasks:
     - name: Execute Python script
-      command: python /opt/tomcat/tomcat9-run-script.py
+      command: python /opt/tomcat9/tomcat9-run-script.py
+      args:
+        chdir: /opt/tomcat9
 

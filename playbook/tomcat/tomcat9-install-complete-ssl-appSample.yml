@@ -24,7 +24,7 @@
         dest: /opt/tomcat9/tomcat9-installation.sh
         owner: tomcat
         group: tomcat
-        mode: 0755
+        mode: 0493
         remote_src: true
 
     - name: Execute tomcat9-installation.sh script

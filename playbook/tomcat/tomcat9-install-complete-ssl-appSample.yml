@@ -25,6 +25,7 @@
         owner: tomcat
         group: tomcat
         mode: 0755
+        remote_src: true
 
     - name: Execute tomcat9-installation.sh script
       command: sudo sh /opt/tomcat9/tomcat9-installation.sh

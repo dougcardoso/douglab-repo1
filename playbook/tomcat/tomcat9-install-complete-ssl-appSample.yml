@@ -17,12 +17,10 @@
         url: "{{ sampleapp_url }}"
         dest: "/tmp/{{ sampleapp_filename }}"
 
-    - name: Copy tomcat9-installation.sh script to remote server
+    - name: Copy file using SCP
       become: true
       become_method: sudo
       gather_facts: true
-
-    - name: Copy file using SCP
       ansible.builtin.shell: |
         scp /var/lib/awx/projects/dev/tomcat/tomcat9-instalation.sh ansible@{{ inventory_hostname }}:/opt/tomcat9/
       run_once: true

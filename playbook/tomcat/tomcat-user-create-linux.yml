@@ -5,13 +5,11 @@
 
   vars:
     username: "tomcat"
-    password: "Tomcat@2023"
 
   tasks:
     - name: Create user
       user:
         name: "{{ username }}"
-        password: "{{ password | password_hash('sha512') }}"
         shell: "/bin/bash"
         createhome: yes
         groups: "tomcat"

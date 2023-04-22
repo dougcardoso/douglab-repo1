@@ -54,6 +54,10 @@
       become_method: sudo
       register: sudo_output
 
+    - name: Check if user is in group
+      shell: "id {{ username }} | grep '{{ group_name }}'"
+      register: group_membership
+
     - name: Fail if user is not in group
       fail:
         msg: "User {{ username }} is not in group {{ group_name }}."

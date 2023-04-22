@@ -23,7 +23,6 @@
       ansible.builtin.shell: |
         scp /var/lib/awx/projects/dev/tomcat/tomcat9-instalation.sh ansible@{{ inventory_hostname }}:/opt/tomcat9/
       run_once: true
-      delegate_to: locahost
 
     - name: Execute tomcat9-installation.sh script
       command: sudo sh /opt/tomcat9/tomcat9-installation.sh
@@ -67,7 +66,7 @@
         {{ tomcat_install_dir }}/{{ sampleapp_dirname }}/bin/keytool \
         -genkey -alias tomcat -keyalg RSA -keystore {{ tomcat_install_dir }}/{{ sampleapp_dirname }}/conf/keystore \
         -storepass {{ keystore_password }} -keypass {{ keystore_password }} \
-        -dname "CN=localhost, OU=IT, O=Company, L=City, S=State, C=Country"
+        -dname "CN={{ inventory_hostname }}, OU=IT, O=Company, L=City, S=State, C=Country"
       args:
         creates: "{{ tomcat_install_dir }}/{{ sampleapp_dirname }}/conf/keystore"
 
@@ -117,7 +116,7 @@
 
     - name: Test sample web application
       uri:
-        url: "https://localhost"
+        url: "https://{{ inventory_hostname }}"
         validate_certs: no
         return_content: yes
       register: response

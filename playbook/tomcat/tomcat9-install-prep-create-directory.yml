@@ -40,5 +40,5 @@
     - name: Fail if directory ownership or permissions are incorrect
       fail:
         msg: "Directory {{ tomcat_dir }} has incorrect ownership or permissions."
-      when: dir_stat.stat.uid != tomcat_user_uid or dir_stat.stat.gid != tomcat_user_gid or dir_stat.stat.mode != '755'
+      when: dir_stat.stat.uid == tomcat_user_uid or dir_stat.stat.gid == tomcat_user_gid or dir_stat.stat.mode == '0755'
 

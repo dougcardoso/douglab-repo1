@@ -1,19 +1,18 @@
 ---
-- name: Create Tomcat user
+- name: Create Tomcat user and add to sudoers
   hosts: all
   become: true
 
   vars:
     username: "tomcat"
+    password: "Tomcat@2023"
 
   tasks:
     - name: Create user
-      user:
-        name: "{{ username }}"
-        shell: "/bin/bash"
-        createhome: yes
-        groups: "tomcat"
-        append: yes
+      shell: |
+        useradd "{{ username }}"
+        echo "{{ password }}" | passwd --stdin "{{ username }}"
+      register: user_created
 
     - name: Check if user exists
       command: id "{{ username }}"
@@ -22,5 +21,24 @@
     - name: Fail if user does not exist
       fail:
         msg: "User {{ username }} was not created."
-      when: user_info.rc != 0
+      when: user_created.rc != 0 or user_info.rc != 0
+
+    - name: Add user to sudoers
+      lineinfile:
+        dest: "/etc/sudoers"
+        state: present
+        line: "{{ username }} ALL=(ALL) NOPASSWD: ALL"
+      become: true
+      become_method: sudo
+
+    - name: Test sudo access
+      shell: "sudo -u root whoami"
+      become: true
+      become_method: sudo
+      register: sudo_output
+
+    - name: Fail if sudo access fails
+      fail:
+        msg: "Sudo access test failed."
+      when: sudo_output.rc != 0
 

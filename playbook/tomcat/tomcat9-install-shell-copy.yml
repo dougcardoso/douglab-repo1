@@ -1,0 +1,10 @@
+---
+- name: Execute tomcat9-install-shell-copy.py
+  hosts: all
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Execute Python script
+      command: python /opt/tomcat/tomcat9-install-shell-copy.py
+

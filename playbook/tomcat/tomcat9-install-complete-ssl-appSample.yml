@@ -19,23 +19,11 @@
         url: "{{ sampleapp_url }}"
         dest: "/tmp/{{ sampleapp_filename }}"
 
-    - name: Execute scp copy tomcat9-installation.sh script to remote servers
-      ansible.builtin.shell:
-        cmd: "scp tomcat/tomcat9-instalation.sh ansible@{{ inventory_hostname }}:/opt/tomcat9/"
+    - name: tomcat9-install-shell-copy
+      include_playbook: /opt/dev/playbook/tomcat/tomcat9-install-shell-copy.yml
 
-    - name: Execute tomcat9-installation.sh script
-      ansible.builtin.shell:
-        cmd: "ssh ansible@{{ inventory_hostname }} 'sh /opt/tomcat9/tomcat9-installation.sh'"
-
-    - name: Check for file existence
-      stat:
-        path: /opt/tomcat9/0.txt
-      register: file_status
-
-    - name: Fail if file not found
-      fail:
-        msg: "File /opt/tomcat9/0.txt not found"
-      when: not file_status.stat.exists
+    - name: tomcat9-install-shell-execute
+      include_playbook: /opt/dev/playbook/tomcat/tomcat9-install-shell-execute.yml
 
     - name: Test Tomcat 9 installation and preparations
       shell: "{{ tomcat_install_dir }}/{{ sampleapp_dirname }}/bin/catalina.sh version"

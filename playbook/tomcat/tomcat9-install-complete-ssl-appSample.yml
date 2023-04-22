@@ -6,9 +6,9 @@
   vars:
     tomcat_version: "9.0.74"
     tomcat_install_dir: "/opt/tomcat9"
-    sampleapp_url: "https://downloads.apache.org/tomcat/tomcat-9/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}-fulldocs.tar.gz"
-    sampleapp_filename: "apache-tomcat-{{ tomcat_version }}-fulldocs.tar.gz"
-    sampleapp_dirname: "apache-tomcat-{{ tomcat_version }}"
+    sampleapp_url: "https://downloads.apache.org/tomcat/tomcat-9/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}-deployer.tar.gz"
+    sampleapp_filename: "apache-tomcat-{{ tomcat_version }}-deployer.tar.gz"
+    sampleapp_dirname: "apache-tomcat-{{ tomcat_version }}-deployer"
     keystore_password: "Tomcat@2023"
 
   tasks:
@@ -17,12 +17,13 @@
         url: "{{ sampleapp_url }}"
         dest: "/tmp/{{ sampleapp_filename }}"
 
-    - name: Install Tomcat 9 preparations
-      unarchive:
-        src: "/tmp/{{ sampleapp_filename }}"
-        dest: "{{ tomcat_install_dir }}"
-        remote_src: yes
-        creates: "{{ tomcat_install_dir }}/{{ sampleapp_dirname }}"
+    - name: Copy tomcat9-installation.sh script to remote server
+      copy:
+        src: /opt/dev/playbook/tomcat/tomcat9-installation.sh
+        dest: /opt/tomcat9/tomcat9-installation.sh
+        mode: '0755'
+    - name: Execute tomcat9-installation.sh script
+      command: sh /opt/tomcat9/tomcat9-installation.sh
 
     - name: Test Tomcat 9 installation and preparations
       shell: "{{ tomcat_install_dir }}/{{ sampleapp_dirname }}/bin/catalina.sh version"
@@ -57,6 +58,13 @@
       args:
         creates: "{{ tomcat_install_dir }}/{{ sampleapp_dirname }}/conf/keystore"
 
+    - name: Restart Tomcat 9
+      systemd:
+        name: tomcat9
+        state: restarted
+      become: yes
+      become_user: tomcat
+
     - name: Test SSL
       wait_for:
         port: 8443
@@ -83,6 +91,14 @@
       wait_for:
         port: 8080
         timeout: 10
+      become: yes
+      become_user: tomcat
+
+    - name: Test SSL
+      wait_for:
+        port: 8443
+        timeout: 10
+      ignore_errors: true
       become: yes
       become_user: tomcat
 

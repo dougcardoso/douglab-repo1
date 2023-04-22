@@ -2,11 +2,11 @@
 
 # Download and extract Apache Tomcat
 cd /tmp
-#wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.74/bin/apache-tomcat-9.0.74-deployer.tar.gz
-tar -xzvf apache-tomcat-9.0.74-deployer.tar.gz
+#wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.74/bin/apache-tomcat-9.0.74.tar.gz
+tar -xzvf apache-tomcat-9.0.74.tar.gz
 
 # Move the extracted directory to /opt and rename it to tomcat
-mv apache-tomcat-9.0.74-deployer /opt/tomcat9
+mv apache-tomcat-9.0.74 /opt/tomcat9
 
 # Create a tomcat user and group
 groupadd tomcat

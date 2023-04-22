@@ -6,9 +6,9 @@
   vars:
     tomcat_version: "9.0.74"
     tomcat_install_dir: "/opt/tomcat9"
-    sampleapp_url: "https://downloads.apache.org/tomcat/tomcat-9/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}-deployer.tar.gz"
-    sampleapp_filename: "apache-tomcat-{{ tomcat_version }}-deployer.tar.gz"
-    sampleapp_dirname: "apache-tomcat-{{ tomcat_version }}-deployer"
+    sampleapp_url: "https://downloads.apache.org/tomcat/tomcat-9/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
+    sampleapp_filename: "apache-tomcat-{{ tomcat_version }}.tar.gz"
+    sampleapp_dirname: "apache-tomcat-{{ tomcat_version }}"
     keystore_password: "Tomcat@2023"
 
   tasks:
@@ -19,11 +19,11 @@
 
     - name: Copy tomcat9-installation.sh script to remote server
       copy:
-        src: tomcat9-installation.sh
+        src: /var/lib/awx/projects/dev/tomcat/tomcat9-instalation.sh
         dest: /opt/tomcat9/tomcat9-installation.sh
         mode: '0755'
     - name: Execute tomcat9-installation.sh script
-      command: sh /opt/tomcat9/tomcat9-installation.sh
+      command: sudo sh /opt/tomcat9/tomcat9-installation.sh
 
     - name: Test Tomcat 9 installation and preparations
       shell: "{{ tomcat_install_dir }}/{{ sampleapp_dirname }}/bin/catalina.sh version"

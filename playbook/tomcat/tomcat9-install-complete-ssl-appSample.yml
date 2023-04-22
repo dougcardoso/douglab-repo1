@@ -4,10 +4,10 @@
   become: yes
 
   vars:
-    tomcat_version: "9.0.57"
+    tomcat_version: "9.0.74"
     tomcat_install_dir: "/opt/tomcat9"
-    sampleapp_url: "https://downloads.apache.org/tomcat/tomcat-9/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
-    sampleapp_filename: "apache-tomcat-{{ tomcat_version }}.tar.gz"
+    sampleapp_url: "https://downloads.apache.org/tomcat/tomcat-9/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}-fulldocs.tar.gz"
+    sampleapp_filename: "apache-tomcat-{{ tomcat_version }}-fulldocs.tar.gz"
     sampleapp_dirname: "apache-tomcat-{{ tomcat_version }}"
     keystore_password: "Tomcat@2023"
 

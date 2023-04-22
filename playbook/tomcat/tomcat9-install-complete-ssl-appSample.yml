@@ -19,13 +19,14 @@
 
     - name: Copy tomcat9-installation.sh script to remote server
       become: true
-      copy:
-        src: /var/lib/awx/projects/dev/tomcat/tomcat9-instalation.sh
-        dest: /opt/tomcat9/tomcat9-installation.sh
-        owner: tomcat
-        group: tomcat
-        mode: 0493
-        remote_src: true
+      become_method: sudo
+      gather_facts: true
+
+    - name: Copy file using SCP
+      ansible.builtin.shell: |
+        scp /var/lib/awx/projects/dev/tomcat/tomcat9-instalation.sh ansible@{{ inventory_hostname }}:/opt/tomcat9/
+      run_once: true
+      delegate_to: ansible.douglab
 
     - name: Execute tomcat9-installation.sh script
       command: sudo sh /opt/tomcat9/tomcat9-installation.sh

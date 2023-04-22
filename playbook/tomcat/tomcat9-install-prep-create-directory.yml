@@ -1,0 +1,44 @@
+---
+- name: Create Tomcat directory with permissions
+  hosts: all
+  become: true
+
+  vars:
+    tomcat_user: "tomcat"
+    tomcat_group: "tomcat"
+    tomcat_dir: "/opt/tomcat9"
+
+  tasks:
+    - name: Create directory
+      file:
+        path: "{{ tomcat_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Change directory ownership
+      file:
+        path: "{{ tomcat_dir }}"
+        owner: "{{ tomcat_user }}"
+        group: "{{ tomcat_group }}"
+        recurse: yes
+
+    - name: Check if directory exists
+      stat:
+        path: "{{ tomcat_dir }}"
+      register: dir_info
+
+    - name: Fail if directory does not exist
+      fail:
+        msg: "Directory {{ tomcat_dir }} does not exist."
+      when: not dir_info.stat.exists
+
+    - name: Check directory ownership and permissions
+      stat:
+        path: "{{ tomcat_dir }}"
+      register: dir_stat
+
+    - name: Fail if directory ownership or permissions are incorrect
+      fail:
+        msg: "Directory {{ tomcat_dir }} has incorrect ownership or permissions."
+      when: dir_stat.stat.uid != ansible_user_uid or dir_stat.stat.gid != ansible_user_gid or dir_stat.stat.mode != '0755'
+

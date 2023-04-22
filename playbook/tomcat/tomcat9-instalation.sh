@@ -54,4 +54,11 @@ systemctl daemon-reload
 systemctl start tomcat
 systemctl enable tomcat
 
-echo "Tomcat has been successfully installed as a service."
+# Check if Tomcat 9 is running
+if ps -ef | grep -q '[t]omcat9'; then
+  echo "Tomcat 9 is running"
+  exit 0  # true
+else
+  echo "Tomcat 9 is not running"
+  exit 1  # false
+fi

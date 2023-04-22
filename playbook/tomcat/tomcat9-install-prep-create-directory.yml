@@ -32,13 +32,3 @@
         msg: "Directory {{ tomcat_dir }} does not exist."
       when: not dir_info.stat.exists
 
-    - name: Check directory ownership and permissions
-      stat:
-        path: "{{ tomcat_dir }}"
-      register: dir_stat
-
-    - name: Fail if directory ownership or permissions are incorrect
-      fail:
-        msg: "Directory {{ tomcat_dir }} has incorrect ownership or permissions."
-      when: dir_stat.stat.uid == tomcat_user_uid or dir_stat.stat.gid == tomcat_user_gid or dir_stat.stat.mode == '0755'
-

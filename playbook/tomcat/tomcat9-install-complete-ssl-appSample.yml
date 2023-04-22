@@ -1,0 +1,100 @@
+---
+- name: Install and deploy Tomcat 9
+  hosts: all
+  become: yes
+
+  vars:
+    tomcat_version: "9.0.57"
+    tomcat_install_dir: "/opt/tomcat9"
+    sampleapp_url: "https://downloads.apache.org/tomcat/tomcat-9/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
+    sampleapp_filename: "apache-tomcat-{{ tomcat_version }}.tar.gz"
+    sampleapp_dirname: "apache-tomcat-{{ tomcat_version }}"
+    keystore_password: "Tomcat@2023"
+
+  tasks:
+    - name: Download Tomcat 9
+      get_url:
+        url: "{{ sampleapp_url }}"
+        dest: "/tmp/{{ sampleapp_filename }}"
+
+    - name: Install Tomcat 9 preparations
+      unarchive:
+        src: "/tmp/{{ sampleapp_filename }}"
+        dest: "{{ tomcat_install_dir }}"
+        remote_src: yes
+        creates: "{{ tomcat_install_dir }}/{{ sampleapp_dirname }}"
+
+    - name: Test Tomcat 9 installation and preparations
+      shell: "{{ tomcat_install_dir }}/{{ sampleapp_dirname }}/bin/catalina.sh version"
+      register: tomcat_version_output
+      ignore_errors: true
+
+    - name: Fail if Tomcat 9 installation or preparations failed
+      fail:
+        msg: "Tomcat 9 installation or preparations failed."
+      when: tomcat_version_output.rc != 0
+
+    - name: Install Tomcat 9
+      systemd:
+        name: tomcat9
+        state: started
+        enabled: yes
+      environment:
+        CATALINA_HOME: "{{ tomcat_install_dir }}/{{ sampleapp_dirname }}"
+
+    - name: Test Tomcat 9 installation
+      wait_for:
+        port: 8080
+        timeout: 10
+      ignore_errors: true
+
+    - name: Enable SSL
+      command: |
+        {{ tomcat_install_dir }}/{{ sampleapp_dirname }}/bin/keytool \
+        -genkey -alias tomcat -keyalg RSA -keystore {{ tomcat_install_dir }}/{{ sampleapp_dirname }}/conf/keystore \
+        -storepass {{ keystore_password }} -keypass {{ keystore_password }} \
+        -dname "CN=localhost, OU=IT, O=Company, L=City, S=State, C=Country"
+      args:
+        creates: "{{ tomcat_install_dir }}/{{ sampleapp_dirname }}/conf/keystore"
+
+    - name: Test SSL
+      wait_for:
+        port: 8443
+        timeout: 10
+      ignore_errors: true
+      become: yes
+      become_user: tomcat
+
+    - name: Deploy sample web application
+      unarchive:
+        src: "https://tomcat.apache.org/tomcat-9.0-doc/appdev/sample/sample.war"
+        dest: "{{ tomcat_install_dir }}/{{ sampleapp_dirname }}/webapps"
+        remote_src: yes
+        creates: "{{ tomcat_install_dir }}/{{ sampleapp_dirname }}/webapps/sample"
+
+    - name: Restart Tomcat 9
+      systemd:
+        name: tomcat9
+        state: restarted
+      become: yes
+      become_user: tomcat
+
+    - name: Test Tomcat 9 sanity
+      wait_for:
+        port: 8080
+        timeout: 10
+      become: yes
+      become_user: tomcat
+
+    - name: Test sample web application
+      uri:
+        url: "https://localhost"
+        validate_certs: no
+        return_content: yes
+      register: response
+
+    - name: Fail if response is not OK
+      fail:
+        msg: "Response is not OK."
+      when: response.status != 200
+

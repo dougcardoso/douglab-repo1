@@ -1,0 +1,28 @@
+---
+- name: Create Tomcat user
+  hosts: all
+  become: true
+
+  vars:
+    username: "tomcat"
+    password: "Tomcat@2023"
+
+  tasks:
+    - name: Create user
+      user:
+        name: "{{ username }}"
+        password: "{{ password | password_hash('sha512') }}"
+        shell: "/bin/bash"
+        createhome: yes
+        groups: "tomcat"
+        append: yes
+
+    - name: Check if user exists
+      command: id "{{ username }}"
+      register: user_info
+
+    - name: Fail if user does not exist
+      fail:
+        msg: "User {{ username }} was not created."
+      when: user_info.rc != 0
+

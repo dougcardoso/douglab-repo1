@@ -1,0 +1,65 @@
+---
+- name: Install Tomcat 11
+  hosts: all
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Create tomcat user and group
+      group:
+        name: tomcat
+        state: present
+      become: true
+
+    - name: Create tomcat installation directory
+      file:
+        path: /opt/tomcat11
+        state: directory
+        mode: '0755'
+        owner: tomcat
+        group: tomcat
+      become: true
+
+    - name: Download Tomcat archive
+      get_url:
+        url: https://downloads.apache.org/tomcat/tomcat-11/v11.0.0-M5/bin/apache-tomcat-11.0.0-M5.tar.gz
+        dest: /tmp/apache-tomcat-11.0.0-M5.tar.gz
+      become: true
+
+    - name: Extract Tomcat archive
+      unarchive:
+        src: /tmp/apache-tomcat-11.0.0-M5.tar.gz
+        dest: /opt/tomcat11
+        owner: tomcat
+        group: tomcat
+        mode: '0755'
+        copy: no
+      become: true
+
+    - name: Set CATALINA_HOME environment variable
+      lineinfile:
+        path: /etc/environment
+        line: CATALINA_HOME=/opt/tomcat11
+        create: yes
+      become: true
+
+    - name: Start Tomcat service
+      systemd:
+        name: tomcat
+        state: started
+        enabled: true
+      become: true
+
+    - name: Test Tomcat installation
+      uri:
+        url: http://localhost:8080/
+        status_code: 200
+      register: tomcat_test
+      become: true
+
+    - name: Fail if Tomcat is not running
+      fail:
+        msg: "Tomcat is not running"
+      when: tomcat_test.status != 200
+      become: true
+

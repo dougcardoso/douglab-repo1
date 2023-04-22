@@ -1,0 +1,21 @@
+---
+- name: Run tomcat9-scp-copy.sh on ansible.douglab server
+  hosts: ansible.douglab
+  become: true
+  
+  tasks:
+  
+  - name: Copy tomcat9-scp-copy.sh to remote server
+    copy:
+      src: tomcat/tomcat9-scp-copy.sh
+      dest: /tmp/tomcat9-scp-copy.sh
+      mode: '0755'
+      
+  - name: Run tomcat9-scp-copy.sh on remote server
+    shell: /tmp/tomcat9-scp-copy.sh
+    register: tomcat_copy_result
+    
+  - name: Check if tomcat9-scp-copy.sh was successful
+    debug:
+      msg: "{{ tomcat_copy_result.stdout_lines }}"
+

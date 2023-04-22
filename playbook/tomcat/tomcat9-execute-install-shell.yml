@@ -1,0 +1,16 @@
+---
+- name: Install Tomcat 9 on remote servers
+  hosts: all
+  become: true
+  
+  tasks:
+  
+  - name: Copy tomcat9-installation.sh to remote servers
+    copy:
+      src: tomcat/tomcat9-installation.sh
+      dest: /opt/tomcat9/tomcat9-installation.sh
+      mode: '0755'
+      
+  - name: Run tomcat9-installation.sh on remote servers
+    shell: /opt/tomcat9/tomcat9-installation.sh
+

@@ -27,12 +27,16 @@
 
     - name: Execute tomcat9-installation.sh script
       command: sudo sh /opt/tomcat9/tomcat9-installation.sh
-      register: tomcat_installation_result
 
-    - name: Check Tomcat 9 installation status
+    - name: Check for file existence
+      stat:
+        path: /opt/tomcat9/0.txt
+      register: file_status
+
+    - name: Fail if file not found
       fail:
-        msg: "Tomcat 9 installation failed"
-      when: tomcat_installation_result.rc != 0             
+        msg: "File /opt/tomcat9/0.txt not found"
+      when: not file_status.stat.exists
 
     - name: Test Tomcat 9 installation and preparations
       shell: "{{ tomcat_install_dir }}/{{ sampleapp_dirname }}/bin/catalina.sh version"

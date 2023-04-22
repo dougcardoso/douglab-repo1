@@ -56,9 +56,11 @@ systemctl enable tomcat
 
 # Check if Tomcat 9 is running
 if ps -ef | grep -q '[t]omcat9'; then
-  echo "Tomcat 9 is running"
+  echo "tomcat up return code 0" > /opt/tomcat9/0.txt
+  rm -f /opt/tomcat9/1.txt
   exit 0  # true
 else
-  echo "Tomcat 9 is not running"
+  echo "tomcat down return code 1" > /opt/tomcat9/1.txt
+  rm -f /opt/tomcat9/0.txt
   exit 1  # false
 fi

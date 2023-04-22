@@ -19,7 +19,7 @@
 
     - name: Copy tomcat9-installation.sh script to remote server
       copy:
-        src: /opt/dev/playbook/tomcat/tomcat9-installation.sh
+        src: tomcat9-installation.sh
         dest: /opt/tomcat9/tomcat9-installation.sh
         mode: '0755'
     - name: Execute tomcat9-installation.sh script

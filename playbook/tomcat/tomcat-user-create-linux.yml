@@ -6,6 +6,7 @@
   vars:
     username: "tomcat"
     password: "Tomcat@2023"
+    group_name: "tomcat"
 
   tasks:
     - name: Create user
@@ -23,6 +24,22 @@
         msg: "User {{ username }} was not created."
       when: user_created.rc != 0 or user_info.rc != 0
 
+  tasks:
+    - name: Create group
+      group:
+        name: "{{ group_name }}"
+        state: present
+
+    - name: Add user to group
+      user:
+        name: "{{ username }}"
+        groups: "{{ group_name }}"
+        append: yes
+
+    - name: Check if user is in group
+      command: "id {{ username }} | grep -o '{{ group_name }}'"
+      register: group_membership      
+
     - name: Add user to sudoers
       lineinfile:
         dest: "/etc/sudoers"
@@ -36,6 +53,11 @@
       become: true
       become_method: sudo
       register: sudo_output
+
+    - name: Fail if user is not in group
+      fail:
+        msg: "User {{ username }} is not in group {{ group_name }}."
+      when: group_membership.rc != 0
 
     - name: Fail if sudo access fails
       fail:

@@ -1,0 +1,30 @@
+---
+#
+# Custom Error Pages
+#
+
+- name: error pages | create errorpages directory
+  file:
+    path: "{{ tomcat_catalina_base }}/webapps/ROOT/errorpages/"
+    state: directory
+    owner: "{{ tomcat_root_user }}"
+    group: "{{ tomcat_system_group }}"
+    mode: "u=rwx,g=rx,o="
+
+- name: error pages | download custom erropages for Tomcat
+  get_url:
+    url: "{{ tomcat_custom_error_pages_url }}/{{ item }}.jsp"
+    dest: "{{ tomcat_catalina_base }}/webapps/ROOT/errorpages/{{ item }}.jsp"
+    mode: '0664'
+  with_items:
+    - "{{ tomcat_custom_error_pages }}"
+  when: tomcat_offline_install
+
+- name: error pages | copy custom erropages for Tomcat
+  copy:
+    src: "{{ item }}.jsp"
+    dest: "{{ tomcat_catalina_base }}/webapps/ROOT/errorpages/{{ item }}.jsp"
+    mode: '0664'
+  with_items:
+    - "{{ tomcat_custom_error_pages }}"
+  when: not tomcat_offline_install

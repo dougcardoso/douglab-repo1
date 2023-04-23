@@ -1,0 +1,125 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+platforms:
+  - name: java-centos6-11-jdk
+    image: tomcat/docker-centos6-ansible
+    image_version: latest
+    groups:
+      - jdk
+      - centos6
+
+  - name: java-centos7-11-jdk
+    image: milcom/centos7-systemd
+    image_version: latest
+    privileged: true
+    groups:
+      - jdk
+      - centos7
+
+  - name: java-centos8-11-jdk
+    image: tomcat/docker-centos8-ansible
+    image_version: latest
+    tmpfs:
+      - /run
+      - /tmp
+    capabilities:
+      - SYS_ADMIN
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    groups:
+      - jdk
+      - python3
+      - centos8
+
+  - name: java-centos6-11-jdk-no-firewall
+    image: tomcat/docker-centos6-ansible
+    image_version: latest
+    groups:
+      - jdk
+      - centos6
+
+  - name: java-centos7-11-jdk-firewall
+    image: milcom/centos7-systemd
+    image_version: latest
+    privileged: true
+    groups:
+      - jdk
+      - centos7
+
+  - name: java-centos8-11-jdk-firewall
+    image: tomcat/docker-centos8-ansible
+    image_version: latest
+    tmpfs:
+      - /run
+      - /tmp
+    capabilities:
+      - SYS_ADMIN
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    groups:
+      - jdk
+      - python3
+      - centos8
+
+  - name: java-centos7-11-jdk-firewall-with-source
+    image: milcom/centos7-systemd
+    image_version: latest
+    privileged: true
+    groups:
+      - jdk
+      - centos7
+      - firewalld_source
+
+  - name: java-centos8-11-jdk-firewall-with-source
+    image: tomcat/docker-centos8-ansible
+    image_version: latest
+    tmpfs:
+      - /run
+      - /tmp
+    capabilities:
+      - SYS_ADMIN
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    groups:
+      - jdk
+      - python3
+      - centos8
+      - firewalld_source
+
+provisioner:
+  name: ansible
+  lint:
+    name: ansible-lint
+  inventory:
+    group_vars:
+      jdk:
+        java_type: 'jdk'
+      server-jre:
+        java_type: 'serverjre'
+      ubuntu14:
+        tomcat_manage_firewalld: false
+      ubuntu16:
+        tomcat_manage_firewalld: false
+      ubuntu18:
+        tomcat_manage_firewalld: false
+      centos6:
+        tomcat_manage_firewalld: false
+      centos7:
+        tomcat_manage_firewalld: true
+      centos8:
+        tomcat_manage_firewalld: true
+      firewalld_source:
+        tomcat_manage_firewalld_use_zone: false
+      ubuntu:
+        tomcat_manage_firewalld: false
+      python3:
+        ansible_python_interpreter: '/usr/bin/env python3'
+scenario:
+  name: default
+verifier:
+  name: testinfra
+  lint:
+    name: flake8

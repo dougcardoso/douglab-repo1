@@ -1,0 +1,15 @@
+# {{ ansible_managed }}
+{{ tomcat_catalina_base }}/logs/catalina/catalina.out {
+  su {{ tomcat_system_user }} {{ tomcat_system_group }}
+  daily
+  rotate 730
+  copytruncate
+  compress
+  delaycompress
+  missingok
+  notifempty
+  minsize {{ tomcat_log_rotate_minsize }}
+  compresscmd {{ tomcat_log_compress_command }}
+  compressoptions "{{ tomcat_log_compress_options }}"
+  compressext {{ tomcat_log_compress_extension }}
+}

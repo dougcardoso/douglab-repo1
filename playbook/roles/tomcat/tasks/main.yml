@@ -1,0 +1,55 @@
+---
+#
+# Installs Tomcat, following best practices of separating
+# CATALINA_BASE directory from CATALINA_HOME
+#
+
+- name: setting RedHat 7 or older lxml package fact
+  set_fact:
+    redhat_lxml_package: 'python-lxml'
+  when:
+    - ansible_distribution_major_version|int <= 7
+    - ansible_os_family == 'RedHat'
+
+- { include_tasks: "xmlx-package-{{ ansible_os_family }}.yml", when: "ansible_os_family == 'Debian' or ansible_os_family == 'RedHat'" }
+
+- name: install Tomcat prerequisite
+  include_tasks: install-prerequisite.yml
+
+- name: set variables for download
+  include_vars: download_tomcat.yml
+
+- name: download Tomcat installer
+  include_tasks: download.yml
+
+- name: install Tomcat
+  include_tasks: install-tomcat.yml
+
+# - name: remove bat files on non-Windows systems
+#  include: removebat-nonwindows.yml
+#  static: no
+#  when: "ansible_os_family != 'Windows'"
+
+- name: prepare Catalina base
+  include_tasks: prepare-catalina-base.yml
+
+- name: configure Tomcat for customisation on start-up
+  include_tasks: configure-tomcat.yml
+
+- name: hardening Tomcat
+  include_tasks: hardening-tomcat.yml
+
+- name: setting ulimits for Tomcat
+  include_tasks: ulimits.yml
+
+- name: add custom error pages
+  include_tasks: custom-errorpages-tomcat.yml
+  when: tomcat_use_custom_error_pages
+
+- name: enable logstash
+  include_tasks: enable-logstash.yml
+  when: tomcat_enable_logstash
+
+- name: manage firewalld
+  include_tasks: manage_firewalld.yml
+  when: tomcat_manage_firewalld

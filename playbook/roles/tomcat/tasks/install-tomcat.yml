@@ -1,0 +1,30 @@
+---
+#
+# Install Tomcat
+#
+
+- name: extract Tomcat archive into installation directory
+  unarchive:
+    src: '{{ tomcat_download_dir }}/{{ tomcat_download_file }}'
+    dest: "{{ tomcat_system_home }}"
+    owner: "{{ tomcat_system_user }}"
+    group: "{{ tomcat_system_group }}"
+    copy: false
+    creates: "'{{ tomcat_dir }}/bin/catalina.sh"
+  when: not __app_installed.stat.exists or tomcat_force_update
+  notify:
+    - restart tomcat services
+
+- name: create symlink for 'tomcat' to the installation directory
+  file:
+    src: '{{ tomcat_dir }}'
+    dest: '{{ tomcat_catalina_home }}'
+    state: link
+    force: true
+
+- name: delete Tomcat archive, if requested (default is yes)
+  file: path={{ item }} state=absent
+  with_items:
+    - '{{ tomcat_download_dir }}/{{ tomcat_download_file }}'
+  ignore_errors: true
+  when: not tomcat_installer_keep

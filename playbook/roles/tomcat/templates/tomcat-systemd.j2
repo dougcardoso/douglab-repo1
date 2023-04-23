@@ -1,0 +1,22 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description=Tomcat {{ tomcat_process_name }} Java Application Server
+After=syslog.target network.target
+
+[Service]
+Type=forking
+
+Environment=CATALINA_HOME={{ tomcat_catalina_home }}
+Environment=CATALINA_BASE={{ tomcat_catalina_base }}
+
+Environment=TOMCAT_USER="{{ tomcat_system_user }}"
+Environment=TOMCAT_GROUP="{{ tomcat_system_group }}"
+Environment=JAVA_HOME="{{ java_home }}"
+Environment=JRE_HOME="{{ java_home }}"
+
+ExecStart={{ tomcat_catalina_base }}/bin/startup.sh
+ExecStop={{ tomcat_catalina_base }}/bin/shutdown.sh
+
+[Install]
+WantedBy=multi-user.target

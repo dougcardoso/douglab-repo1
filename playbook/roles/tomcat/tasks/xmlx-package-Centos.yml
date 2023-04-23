@@ -1,0 +1,7 @@
+---
+#
+# Install lxml
+#
+
+- name: install Python XML library
+  package: name='{{ centos_lxml_package | default("python3-lxml") }}' state=present

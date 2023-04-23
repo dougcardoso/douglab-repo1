@@ -1,0 +1,11 @@
+#
+# Testing Tomcat 7-8-9 installation Ansible role
+#
+---
+- hosts: server2.douglab, server3.douglab
+  remote_user: root
+  vars:
+    - tomcat_force_update: true
+  roles:
+    - cmprescott.xml
+    - ansible-role-tomcat

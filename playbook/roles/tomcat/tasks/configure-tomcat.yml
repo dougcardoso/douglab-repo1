@@ -1,0 +1,65 @@
+---
+#
+# Configure Tomcat
+#
+
+- name: generate a custom 'setenv.sh' from template, provides the ability to configure Tomcat at start-up from outside the container
+  template:
+    src: setenv.sh.j2
+    dest: "{{ tomcat_catalina_base }}/bin/setenv.sh"
+    mode: ug+x
+
+- name: "generate a custom '{{ tomcat_process_name }}.jmxremote.password' from template, to use pasword protected JMX ports"
+  template:
+    src: jmxremote.password.j2
+    dest: "{{ tomcat_catalina_base }}/conf/{{ tomcat_process_name }}.jmxremote.password"
+    owner: "{{ tomcat_system_user }}"
+    group: "{{ tomcat_system_group }}"
+    mode: 0600
+
+- name: "generate a custom '{{ tomcat_process_name }}.jmxremote.access' from template, to use pasword protected JMX ports"
+  template:
+    src: jmxremote.access.j2
+    dest: "{{ tomcat_catalina_base }}/conf/{{ tomcat_process_name }}.jmxremote.access"
+    owner: "{{ tomcat_system_user }}"
+    group: "{{ tomcat_system_group }}"
+    mode: 0640
+
+- name: generate Tomcat init script
+  template:
+    src: tomcat.j2
+    dest: "/etc/init.d/{{ tomcat_process_name }}"
+    owner: "{{ tomcat_system_user }}"
+    group: "{{ tomcat_system_group }}"
+    mode: 0750
+
+- name: generate Tomcat systemd script
+  template:
+    src: tomcat-systemd.j2
+    dest: "/etc/systemd/system/{{ tomcat_process_name }}.service"
+    owner: "{{ tomcat_system_user }}"
+    group: "{{ tomcat_system_group }}"
+    mode: 0644
+  when: not (ansible_os_family == 'RedHat' and ansible_distribution_major_version|int <= 6)
+
+- name: "Prepare daily catalina.out logrotate"
+  template:
+    dest: '/etc/logrotate.d/{{ tomcat_system_name }}-catalina'
+    src: "logrotate-catalina-out.j2"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+
+- name: "Check cron.d folder"
+  stat:
+    path: /etc/cron.d
+  register: cron_d_dir
+
+- name: "Prepare daily log, txt, current logrotate cron.d task"
+  template:
+    dest: '/etc/cron.d/{{ tomcat_system_name }}-logs'
+    src: "tomcat-logs.j2"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  when: cron_d_dir.stat.exists

@@ -1,0 +1,110 @@
+---
+#
+# Configure Tomcat firewalld
+#
+
+- name: install firewalld package
+  package:
+    name: firewalld
+    state: present
+
+- name: ensure firewalld is running and enabled on boot
+  service:
+    name: firewalld
+    state: started
+    enabled: true
+
+- name: 'configure firewalld for http port {{ tomcat_http_port }}'
+  firewalld:
+    rich_rule: 'rule family=ipv4 source address="{{ item }}" port port={{ tomcat_http_port }} protocol=tcp accept'
+    permanent: true
+    immediate: true
+    state: enabled
+  with_items:
+    - '{{ tomcat_http_source }}'
+  when: not tomcat_manage_firewalld_use_zone
+
+- name: 'configure firewalld for ajp port {{ tomcat_ajp_port }}'
+  firewalld:
+    rich_rule: 'rule family=ipv4 source address="{{ item }}" port port={{ tomcat_ajp_port }} protocol=tcp accept'
+    permanent: true
+    immediate: true
+    state: enabled
+  with_items:
+    - '{{ tomcat_ajp_source }}'
+  when: not tomcat_manage_firewalld_use_zone
+
+- name: 'configure firewalld for https port {{ tomcat_https_port }}'
+  firewalld:
+    rich_rule: 'rule family=ipv4 source address="{{ item }}" port port={{ tomcat_https_port }} protocol=tcp accept'
+    permanent: true
+    immediate: true
+    state: enabled
+  with_items:
+    - '{{ tomcat_https_source }}'
+  when: not tomcat_manage_firewalld_use_zone
+
+- name: 'configure firewalld for jmx port {{ tomcat_jmx_port }}'
+  firewalld:
+    rich_rule: 'rule family=ipv4 source address="{{ item }}" port port={{ tomcat_jmx_port }} protocol=tcp accept'
+    permanent: true
+    immediate: true
+    state: enabled
+  with_items:
+    - '{{ tomcat_jmx_source }}'
+  when: not tomcat_manage_firewalld_use_zone
+
+- name: 'configure firewalld for shutdown port {{ tomcat_shutdown_port }}'
+  firewalld:
+    rich_rule: 'rule family=ipv4 source address="{{ item }}" port port={{ tomcat_shutdown_port }} protocol=tcp accept'
+    permanent: true
+    immediate: true
+    state: enabled
+  with_items:
+    - '{{ tomcat_shutdown_source }}'
+  when: not tomcat_manage_firewalld_use_zone
+
+- name: 'configure firewalld for http port {{ tomcat_http_port }}'
+  firewalld:
+    port: '{{ tomcat_http_port }}/tcp'
+    permanent: true
+    immediate: true
+    state: enabled
+    zone: '{{ tomcat_http_zone }}'
+  when: tomcat_manage_firewalld_use_zone
+
+- name: 'configure firewalld for ajp port {{ tomcat_ajp_port }}'
+  firewalld:
+    port: '{{ tomcat_ajp_port }}/tcp'
+    permanent: true
+    immediate: true
+    state: enabled
+    zone: '{{ tomcat_ajp_zone }}'
+  when: tomcat_manage_firewalld_use_zone
+
+- name: 'configure firewalld for https port {{ tomcat_https_port }}'
+  firewalld:
+    port: '{{ tomcat_https_port }}/tcp'
+    permanent: true
+    immediate: true
+    state: enabled
+    zone: '{{ tomcat_https_zone }}'
+  when: tomcat_manage_firewalld_use_zone
+
+- name: 'configure firewalld for jmx port {{ tomcat_jmx_port }}'
+  firewalld:
+    port: '{{ tomcat_jmx_port }}/tcp'
+    permanent: true
+    immediate: true
+    state: enabled
+    zone: '{{ tomcat_jmx_zone }}'
+  when: tomcat_manage_firewalld_use_zone
+
+- name: 'configure firewalld for shutdown port {{ tomcat_shutdown_port }}'
+  firewalld:
+    port: '{{ tomcat_shutdown_port }}/tcp'
+    permanent: true
+    immediate: true
+    state: enabled
+    zone: '{{ tomcat_shutdown_zone }}'
+  when: tomcat_manage_firewalld_use_zone

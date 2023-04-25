@@ -1,0 +1,83 @@
+---
+- name: Install ELK
+  hosts: all
+  become: true
+  
+  tasks:
+  - name: Install Java
+    dnf:
+      name: java-11-openjdk-devel
+      state: present
+
+  - name: Install Elasticsearch
+    dnf:
+      name: elasticsearch
+      state: present
+    notify: start Elasticsearch
+
+  - name: Configure Elasticsearch
+    copy:
+      src: elasticsearch.yml
+      dest: /etc/elasticsearch/elasticsearch.yml
+      owner: elasticsearch
+      group: elasticsearch
+      mode: '0640'
+    notify: restart Elasticsearch
+
+  - name: Install Logstash
+    dnf:
+      name: logstash
+      state: present
+
+  - name: Configure Logstash
+    copy:
+      src: logstash.conf
+      dest: /etc/logstash/conf.d/logstash.conf
+      owner: root
+      group: root
+      mode: '0644'
+    notify: restart Logstash
+
+  - name: Install Kibana
+    dnf:
+      name: kibana
+      state: present
+    notify: start Kibana
+
+  - name: Configure Kibana
+    copy:
+      src: kibana.yml
+      dest: /etc/kibana/kibana.yml
+      owner: kibana
+      group: kibana
+      mode: '0640'
+    notify: restart Kibana
+
+  handlers:
+  - name: start Elasticsearch
+    systemd:
+      name: elasticsearch.service
+      state: started
+      enabled: true
+
+  - name: restart Elasticsearch
+    systemd:
+      name: elasticsearch.service
+      state: restarted
+
+  - name: restart Logstash
+    systemd:
+      name: logstash.service
+      state: restarted
+
+  - name: start Kibana
+    systemd:
+      name: kibana.service
+      state: started
+      enabled: true
+
+  - name: restart Kibana
+    systemd:
+      name: kibana.service
+      state: restarted
+

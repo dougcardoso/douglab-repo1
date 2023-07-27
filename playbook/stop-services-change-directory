@@ -1,0 +1,17 @@
+---
+- hosts: your_target_hosts
+  become: yes
+  tasks:
+    - name: Stop Prometheus service
+      shell: systemctl stop prometheus
+      ignore_errors: yes
+
+    - name: Stop Node Explorer service
+      shell: systemctl stop node_exporter
+      ignore_errors: yes
+
+    - name: Rename /app/prometheus to /app/prometheus_decommisioned
+      command: mv /app/prometheus /app/prometheus_decommissioned
+      args:
+        removes: /app/prometheus
+        creates: /app/prometheus_decommissioned

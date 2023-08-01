@@ -1,0 +1,48 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Check if machine is alive
+      ping:
+
+    - name: Check disk space
+      shell: df -h
+      register: disk_space
+      changed_when: False
+
+    - name: Display disk space
+      debug:
+        var: disk_space.stdout_lines
+
+    - name: Check CPU load
+      shell: uptime
+      register: cpu_load
+      changed_when: False
+
+    - name: Display CPU load
+      debug:
+        var: cpu_load.stdout_lines
+
+    - name: Check memory usage
+      shell: free -h
+      register: memory_usage
+      changed_when: False
+
+    - name: Display memory usage
+      debug:
+        var: memory_usage.stdout_lines
+
+    - name: Get list of all processes
+      shell: ps aux
+      register: process_list
+      changed_when: False
+
+    - name: Display list of all processes
+      debug:
+        var: process_list.stdout_lines
+
+    - name: Check if specific service is running
+      systemd:
+        name: serviceName
+        state: started
+      ignore_errors: true

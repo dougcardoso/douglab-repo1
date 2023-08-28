@@ -1,0 +1,19 @@
+---
+- name: Delete files inside directory
+  hosts: your_target_hosts
+  become: yes  # This will escalate privilege to root
+
+  tasks:
+    - name: Check if directory is empty
+      stat:
+        path: /tmp/dir1  # Directory path you want to check
+      register: dir_stats
+
+    - name: Delete files inside directory
+      become: yes
+      become_user: root
+      file:
+        path: /tmp/dir1  # Directory path you want to delete files from
+        state: absent   # Absent state will remove the directory and its contents
+        recurse: yes    # Recursively delete files and subdirectories
+      when: dir_stats.stat.isdir and dir_stats.stat.size > 0  # Delete only if directory is non-empty

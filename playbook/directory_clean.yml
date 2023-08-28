@@ -1,19 +1,20 @@
 ---
-- name: Delete files inside directory
+- name: Delete Directories Inside /app/ExecuteOracleScript
   hosts: your_target_hosts
   become: yes  # This will escalate privilege to root
 
   tasks:
-    - name: Check if directory is empty
-      stat:
-        path: /tmp/dir1  # Directory path you want to check
-      register: dir_stats
+    - name: Get list of directories to delete
+      shell: find /app/ExecuteOracleScript -maxdepth 1 -type d ! -path /app/ExecuteOracleScript
+      register: dirs_to_delete
+      changed_when: false  # We don't want to treat directory listing as a change
 
-    - name: Delete files inside directory
+    - name: Delete directories
       become: yes
       become_user: root
       file:
-        path: /tmp/dir1  # Directory path you want to delete files from
-        state: absent   # Absent state will remove the directory and its contents
-        recurse: yes    # Recursively delete files and subdirectories
-      when: dir_stats.stat.isdir and dir_stats.stat.size > 0  # Delete only if directory is non-empty
+        path: "{{ item }}"
+        state: absent
+        recurse: yes
+      loop: "{{ dirs_to_delete.stdout_lines }}"
+      when: dirs_to_delete.stdout_lines | length > 0  # Only delete if there are directories to delete

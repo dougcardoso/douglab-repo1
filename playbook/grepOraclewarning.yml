@@ -1,0 +1,15 @@
+---
+- name: Check for error strings in systemout.log
+  hosts: your_target_host_group_or_hostname
+  tasks:
+  - name: Search for ORA, SP2, and PL1 in systemout.log
+    command: grep -E "ORA|SP2|PL1" /path/to/systemout.log
+    register: search_results
+    failed_when: search_results.stdout != ""
+    ignore_errors: yes
+
+  - name: Output the failure if strings are found
+    fail:
+      msg: "The systemout.log contains one of the error strings: ORA, SP2, PL1"
+    when: search_results.stdout != ""
+

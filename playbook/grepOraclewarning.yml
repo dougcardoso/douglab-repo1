@@ -1,15 +1,17 @@
 ---
-- name: Check for error strings in systemout.log
+- name: Execute failDatabaseScript role and handle errors
   hosts: your_target_host_group_or_hostname
   tasks:
-  - name: Search for ORA, SP2, and PL1 in systemout.log
-    command: grep -E "ORA|SP2|PL1" /path/to/systemout.log
-    register: search_results
-    failed_when: search_results.stdout != ""
-    ignore_errors: yes
+    - block:
+        - name: Include failDatabaseScript role
+          include_role:
+            name: failDatabaseScript
 
-  - name: Output the failure if strings are found
-    fail:
-      msg: "The systemout.log contains one of the error strings: ORA, SP2, PL1"
-    when: search_results.stdout != ""
+      rescue:
+        - name: Notify about the fatal error
+          debug:
+            msg: "A fatal error occurred while executing the failDatabaseScript role."
 
+        - name: Fail the playbook with an explicit message
+          fail:
+            msg: "Stopping playbook execution due to fatal error in failDatabaseScript role."

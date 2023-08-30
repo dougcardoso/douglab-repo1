@@ -1,17 +1,16 @@
 ---
-- name: Execute failDatabaseScript role and handle errors
-  hosts: your_target_host_group_or_hostname
+- name: Check for specific strings in db.txt log file
+  hosts: your_target_host
   tasks:
-    - block:
-        - name: Include failDatabaseScript role
-          include_role:
-            name: failDatabaseScript
+    - name: Read the content of db.txt
+      slurp:
+        src: /path/to/db.txt
+      register: file_content
 
-      rescue:
-        - name: Notify about the fatal error
-          debug:
-            msg: "A fatal error occurred while executing the failDatabaseScript role."
-
-        - name: Fail the playbook with an explicit message
-          fail:
-            msg: "Stopping playbook execution due to fatal error in failDatabaseScript role."
+    - name: Check for unwanted strings
+      fail:
+        msg: "Found an unwanted string in db.txt"
+      when: >
+        "'ORA' in file_content['content'] | b64decode or 
+        'SP2' in file_content['content'] | b64decode or
+        'PLS' in file_content['content'] | b64decode"

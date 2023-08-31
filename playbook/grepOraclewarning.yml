@@ -1,16 +1,17 @@
 ---
-- name: Check for specific strings in db.txt log file
-  hosts: your_target_host
+- hosts: all
   tasks:
-    - name: Read the content of db.txt
-      slurp:
-        src: /path/to/db.txt
-      register: file_content
+    - name: Execute a command (replace with your desired task)
+      command: echo "Sample output with ORA string"
+      register: result
+      ignore_errors: true
 
-    - name: Check for unwanted strings
+    - name: Check for specific strings in the output
+      set_fact:
+        found_strings: "{{ ['ORA', 'SP2', 'PLS'] | intersect(result.stdout.split()) }}"
+      when: result.stdout is search('(ORA|SP2|PLS)')
+
+    - name: Fail if specific strings are found
       fail:
-        msg: "Found an unwanted string in db.txt"
-      when: >
-        "'ORA' in file_content['content'] | b64decode or 
-        'SP2' in file_content['content'] | b64decode or
-        'PLS' in file_content['content'] | b64decode"
+        msg: "Found unwanted strings: {{ found_strings }}"
+      when: found_strings | length > 0

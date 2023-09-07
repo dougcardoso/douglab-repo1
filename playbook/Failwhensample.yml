@@ -1,0 +1,20 @@
+If you want to check for any of those specific Oracle errors (`ORA`, `SP2`, `PLS`) in the output of a command and fail the task if any are found, you can extend the `failed_when` condition. Here's an example of how you can structure your task:
+
+```yaml
+tasks:
+  - name: Execute Oracle command
+    command: /path/to/your/oracle/command
+    register: oracle_output
+    failed_when: 
+      - "'ORA-' in oracle_output.stdout or 'ORA-' in oracle_output.stderr"
+      - "'SP2-' in oracle_output.stdout or 'SP2-' in oracle_output.stderr"
+      - "'PLS-' in oracle_output.stdout or 'PLS-' in oracle_output.stderr"
+```
+
+This task:
+
+- Executes your Oracle-related command with the `command` module.
+- Registers the output of the command in the `oracle_output` variable.
+- Checks the `stdout` and `stderr` of the command for any of the specified Oracle error codes. If any are found, the task fails, and by default, the playbook halts.
+
+Remember to adjust `/path/to/your/oracle/command` to the actual path of your Oracle command or script.
